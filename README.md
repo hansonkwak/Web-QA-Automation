@@ -1,32 +1,62 @@
-# React + TypeScript + Vite
+# 🧪 Web QA Automation Testbed
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## 💡 기획 의도 및 배경
+**"반복되는 수동 테스트, 어떻게 하면 효율적으로 자동화할 수 있을까?"**
 
-Currently, two official plugins are available:
+개발 과정에서 기능이 하나 추가될 때마다 기존 기능들이 정상적으로 작동하는지 확인하는 회귀 테스트(Regression Test)는 필수적입니다. 하지만 이를 사람이 매번 수동으로 확인하는 것은 시간 소모가 클 뿐만 아니라, 휴먼 에러가 발생할 가능성이 높습니다. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+이러한 문제를 해결하고자, 실제 서비스(이커머스)와 매우 유사한 환경의 **테스트베드(Testbed)**를 직접 구축하고, **사용자의 주요 핵심 여정을 완벽하게 검증하는 E2E(End-to-End) 자동화 테스트 환경**을 설계했습니다. 
 
-## React Compiler
+이 프로젝트는 단순히 '동작하는 웹'을 만드는 것을 넘어, **'소프트웨어의 품질(QA)을 어떻게 기술적으로 보장할 것인가'**에 대한 저만의 고민과 해결 과정을 담은 포트폴리오입니다.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 🛠 왜 Playwright를 선택했는가? (테스트 도구 비교)
+프로젝트 시작 전, E2E 테스트 자동화를 위해 여러 도구(Cypress, Selenium, Playwright 등)를 깊이 있게 비교 분석했습니다. 그 중 **Playwright**를 최종 선택한 이유는 다음과 같습니다:
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+1. **강력한 브라우저 호환성:** Chromium, WebKit, Firefox 등 다양한 브라우저 환경을 하나의 API로 테스트할 수 있어 크로스 브라우징 이슈를 쉽게 잡아낼 수 있습니다.
+2. **빠른 실행 속도 및 병렬 테스트:** 테스트 실행 속도가 빠르며, 병렬(Parallel) 처리를 통해 전체 테스트 시간을 크게 단축시킵니다.
+3. **스마트한 Auto-wait 기능:** 화면에 요소가 나타날 때까지 프레임워크가 스스로 기다려주어(Flaky Test 방지), 비동기 렌더링이 많은 최신 React 환경에 가장 적합했습니다.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+---
+
+## 🎯 주요 테스트 케이스 및 시나리오
+실제 쇼핑몰 이용자의 흐름(User Journey)을 기반으로 테스트 케이스를 설계했습니다. `e2e/` 폴더 내에 총 6개의 주요 시나리오로 구성되어 있습니다.
+
+- 🔐 **인증 (`auth.spec.ts`):** 회원가입, 로그인, 로그아웃 등 사용자 인증 흐름 정상 작동 여부 검증
+- 🛍️ **상품 목록 및 탐색 (`products.spec.ts`):** 상품 목록 렌더링, 카테고리 필터링 및 검색 기능 검증
+- 📦 **상품 상세 (`product_detail.spec.ts`):** 개별 상품의 상세 정보 확인 및 옵션 선택 로직 검증
+- 🛒 **장바구니 (`cart.spec.ts`):** 장바구니에 상품 담기, 수량 변경, 삭제 등 상태 업데이트 검증
+- 💳 **결제 (`checkout.spec.ts`):** 배송 정보 입력부터 최종 주문 결제 완료까지의 핵심 비즈니스 흐름 검증
+- ⚠️ **엣지 케이스 (`edge_cases.spec.ts`):** 비정상적인 입력값, 네트워크 지연 등 예외 상황에서의 에러 처리 및 방어 로직 검증
+
+---
+
+## 💻 기술 스택
+- **프론트엔드 (Testbed App):** React 19, TypeScript, Vite, Tailwind CSS
+- **테스트 자동화 (QA Automation):** Playwright
+
+---
+
+## 🚀 실행 방법
+
+### 1. 패키지 설치
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. 로컬 테스트베드(쇼핑몰 웹) 실행
+```bash
+npm run dev
+```
+
+### 3. E2E 테스트 실행
+새 터미널을 열고 아래 명령어를 입력하여 자동화 테스트를 실행해 볼 수 있습니다.
+
+```bash
+# 전체 E2E 자동화 테스트 백그라운드 실행
+npm run test
+
+# Playwright UI 모드로 테스트 실행 (시각적으로 테스트 과정을 볼 수 있어 추천합니다!)
+npm run test:ui
+```
